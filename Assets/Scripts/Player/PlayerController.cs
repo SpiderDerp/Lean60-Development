@@ -25,14 +25,15 @@ public class PlayerController : MonoBehaviour
 
     [Header("Ground")]
     [SerializeField] Transform groundCheck;
-    [SerializeField] float groundCheckRadius = 0.15f;
-    [SerializeField] LayerMask groundMask = ~0;
+    [SerializeField] float groundCheckRadius = 0.12f;
+    [SerializeField] LayerMask groundMask;
 
     Rigidbody2D _rb;
     PlayerHealth _health;
     PlayerPowerupInventory _inventory;
     GrappleController _grapple;
     PlayerGun _gun;
+    SpriteRenderer _sprite;
 
     InputAction _moveAction;
     InputAction _jumpAction;
@@ -41,6 +42,7 @@ public class PlayerController : MonoBehaviour
     float _facingSign = 1f;
     bool _jumpBuffered;
     bool _powerupPressed;
+    readonly Collider2D[] _groundHits = new Collider2D[8];
 
     public float FacingSign => _facingSign;
     public bool IsGrounded { get; private set; }
@@ -54,17 +56,21 @@ public class PlayerController : MonoBehaviour
         _inventory = GetComponent<PlayerPowerupInventory>();
         _grapple = GetComponent<GrappleController>();
         _gun = GetComponent<PlayerGun>();
+        _sprite = GetComponent<SpriteRenderer>();
 
         _rb.mass = mass;
         _rb.gravityScale = gravityScale;
         _rb.freezeRotation = true;
         _rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
+        if (groundMask.value == 0)
+            groundMask = LayerMask.GetMask("Ground");
+
         if (groundCheck == null)
         {
             var check = new GameObject("GroundCheck");
             check.transform.SetParent(transform);
-            check.transform.localPosition = new Vector3(0f, -0.55f, 0f);
+            check.transform.localPosition = new Vector3(0f, -0.58f, 0f);
             groundCheck = check.transform;
         }
 
@@ -131,7 +137,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        IsGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundMask);
+        IsGrounded = CheckGrounded();
 
         if (Mode == ControlMode.Ship)
             TickShip();
@@ -211,11 +217,46 @@ public class PlayerController : MonoBehaviour
             _gun.TryFire();
     }
 
+    bool CheckGrounded()
+    {
+        if (groundCheck == null)
+            return false;
+
+        var filter = new ContactFilter2D
+        {
+            useTriggers = false,
+            useLayerMask = true
+        };
+        filter.SetLayerMask(groundMask);
+
+        int count = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, filter, _groundHits);
+        for (int i = 0; i < count; i++)
+        {
+            var hit = _groundHits[i];
+            if (hit == null)
+                continue;
+            if (hit.transform == transform || hit.transform.IsChildOf(transform))
+                continue;
+            return true;
+        }
+
+        return false;
+    }
+
     void FaceSprite()
     {
+        if (_facingSign == 0f)
+            _facingSign = 1f;
+
+        // Keep scale positive. Negative X scale makes URP 2D sprites vanish.
         var scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * _facingSign;
+        scale.x = Mathf.Abs(scale.x);
+        if (scale.x < 0.01f)
+            scale.x = 0.9f;
         transform.localScale = scale;
+
+        if (_sprite != null)
+            _sprite.flipX = _facingSign < 0f;
     }
 
     public void TeleportTo(Vector3 position)
@@ -230,9 +271,8 @@ public class PlayerController : MonoBehaviour
         if (_grapple != null)
             _grapple.ForceRelease();
 
-        // Leave ship mid-flight on death, but keep inventory flags for pickups.
-        if (_inventory.InShipMode)
-            _inventory.ExitShipMode();
+        if (_inventory != null)
+            _inventory.ClearAll();
 
         _rb.gravityScale = gravityScale;
         TeleportTo(position);

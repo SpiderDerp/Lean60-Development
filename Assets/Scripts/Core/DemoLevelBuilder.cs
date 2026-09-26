@@ -7,13 +7,14 @@ using UnityEngine.UI;
 /// </summary>
 public class DemoLevelBuilder : MonoBehaviour
 {
-    [SerializeField] bool buildOnAwake = true;
+    [SerializeField] bool buildOnAwake = false;
 
     Sprite _pixel;
     Projectile _projectilePrefab;
 
     void Awake()
     {
+        // Levels are now authored in the scene with prefabs. Keep this as a legacy helper only.
         if (buildOnAwake)
             Build();
     }
@@ -77,7 +78,8 @@ public class DemoLevelBuilder : MonoBehaviour
         rb.freezeRotation = true;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-        // Add PlayerController first so dependent components can resolve it.
+        go.AddComponent<PlayerHealth>();
+        go.AddComponent<PlayerPowerupInventory>();
         var player = go.AddComponent<PlayerController>();
         go.AddComponent<GrappleController>();
         go.AddComponent<PlayerGun>();
@@ -149,8 +151,8 @@ public class DemoLevelBuilder : MonoBehaviour
         var b = CreateBody("PortalB", new Vector3(108f, 5.2f, 0f), new Vector2(1f, 1.5f), new Color(0.6f, 0.2f, 0.9f), true);
         var portalA = a.AddComponent<Portal>();
         var portalB = b.AddComponent<Portal>();
-        portalA.LinkedPortal = portalB;
-        portalB.LinkedPortal = portalA;
+        portalA.SetLinkId("A");
+        portalB.SetLinkId("A");
     }
 
     void BuildWindSection()

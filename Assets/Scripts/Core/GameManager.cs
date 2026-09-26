@@ -93,6 +93,8 @@ public class GameManager : MonoBehaviour
         State = RunState.Playing;
         Time.timeScale = 1f;
 
+        LevelResetter.ResetLevel();
+
         if (player != null && spawnPoint != null)
             player.RespawnAt(spawnPoint.Position);
 

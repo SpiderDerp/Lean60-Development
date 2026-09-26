@@ -156,6 +156,18 @@ public class BossController : MonoBehaviour
         }
     }
 
+    public void ResetFight()
+    {
+        _hp = maxHp;
+        _patternIndex = 0;
+        _patternTimer = 0f;
+        _shotsFired = 0;
+        _shotTimer = 0f;
+        _inPattern = false;
+        gameObject.SetActive(true);
+        UpdateHpUi();
+    }
+
     void UpdateHpUi()
     {
         if (hpText != null)

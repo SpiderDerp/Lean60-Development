@@ -4,16 +4,21 @@ using System.Collections;
 [RequireComponent(typeof(Collider2D))]
 public class Portal : MonoBehaviour
 {
-    [SerializeField] Portal linkedPortal;
+    [SerializeField] string linkId = "A";
     [SerializeField] Vector2 exitOffset = new Vector2(1.2f, 0f);
     [SerializeField] float cooldown = 0.4f;
 
     bool _coolingDown;
 
-    public Portal LinkedPortal
+    public string LinkId
     {
-        get => linkedPortal;
-        set => linkedPortal = value;
+        get => linkId;
+        set => linkId = value;
+    }
+
+    public void SetLinkId(string id)
+    {
+        linkId = id;
     }
 
     void Reset()
@@ -23,7 +28,7 @@ public class Portal : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (_coolingDown || linkedPortal == null)
+        if (_coolingDown)
             return;
         if (!other.CompareTag("Player"))
             return;
@@ -32,18 +37,54 @@ public class Portal : MonoBehaviour
         if (player == null)
             return;
 
-        Vector3 destination = linkedPortal.transform.position + (Vector3)linkedPortal.exitOffset;
-        player.TeleportTo(destination);
-        StartCoroutine(CooldownBoth());
+        var destination = FindLinkedPortal();
+        if (destination == null)
+            return;
+
+        player.TeleportTo(destination.transform.position + (Vector3)destination.exitOffset);
+        StartCoroutine(CooldownGroup());
     }
 
-    IEnumerator CooldownBoth()
+    Portal FindLinkedPortal()
     {
-        _coolingDown = true;
-        linkedPortal._coolingDown = true;
+        if (string.IsNullOrWhiteSpace(linkId))
+            return null;
+
+        var portals = FindObjectsByType<Portal>(FindObjectsSortMode.None);
+        for (int i = 0; i < portals.Length; i++)
+        {
+            var other = portals[i];
+            if (other == this || !other.isActiveAndEnabled)
+                continue;
+            if (string.IsNullOrWhiteSpace(other.linkId))
+                continue;
+            if (string.Equals(other.linkId.Trim(), linkId.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                return other;
+        }
+
+        return null;
+    }
+
+    IEnumerator CooldownGroup()
+    {
+        var portals = FindObjectsByType<Portal>(FindObjectsSortMode.None);
+        for (int i = 0; i < portals.Length; i++)
+        {
+            var other = portals[i];
+            if (other == null)
+                continue;
+            if (string.IsNullOrWhiteSpace(other.linkId))
+                continue;
+            if (string.Equals(other.linkId.Trim(), linkId.Trim(), System.StringComparison.OrdinalIgnoreCase))
+                other._coolingDown = true;
+        }
+
         yield return new WaitForSeconds(cooldown);
-        _coolingDown = false;
-        if (linkedPortal != null)
-            linkedPortal._coolingDown = false;
+
+        for (int i = 0; i < portals.Length; i++)
+        {
+            if (portals[i] != null)
+                portals[i]._coolingDown = false;
+        }
     }
 }

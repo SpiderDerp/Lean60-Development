@@ -21,6 +21,6 @@ public class GrappleGunPickup : MonoBehaviour
 
         inventory.GrantGrapple();
         if (destroyOnPickup)
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 }

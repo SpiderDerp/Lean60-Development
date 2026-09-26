@@ -143,3 +143,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450c15c848488f160fc09ba0ffa98a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  linkId: A
+  exitOffset: {x: 1.2, y: 0}
+  cooldown: 0.4 

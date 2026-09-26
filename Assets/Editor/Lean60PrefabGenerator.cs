@@ -44,8 +44,8 @@ public static class Lean60PrefabGenerator
         EnsureFolder(PrefabFolder);
         var pixel = CreatePixelSpriteAsset();
 
-        CreateSolidPrefab("Platform", pixel, new Color(0.35f, 0.35f, 0.4f), new Vector2(2f, 1f), false, null);
-        CreateSolidPrefab("BreakableBlock", pixel, new Color(0.6f, 0.35f, 0.15f), Vector2.one, false, typeof(BreakableBlock));
+        CreateSolidPrefab("Platform", pixel, new Color(0.35f, 0.35f, 0.4f), new Vector2(2f, 1f), false, null, "Ground");
+        CreateSolidPrefab("BreakableBlock", pixel, new Color(0.6f, 0.35f, 0.15f), Vector2.one, false, typeof(BreakableBlock), "Ground");
         CreateSolidPrefab("SpikeHazard", pixel, new Color(0.85f, 0.1f, 0.1f), new Vector2(1f, 0.4f), true, typeof(SpikeHazard));
         CreateSolidPrefab("BouncePad", pixel, new Color(0.2f, 0.95f, 0.35f), new Vector2(1.5f, 0.4f), true, typeof(BouncePad));
         CreateSolidPrefab("WindField", pixel, new Color(0.5f, 0.8f, 1f, 0.35f), new Vector2(4f, 3f), true, typeof(WindField));
@@ -123,11 +123,17 @@ public static class Lean60PrefabGenerator
         Save(go, "Player");
     }
 
-    static GameObject CreateSolidPrefab(string name, Sprite pixel, Color color, Vector2 size, bool trigger, System.Type component)
+    static GameObject CreateSolidPrefab(string name, Sprite pixel, Color color, Vector2 size, bool trigger, System.Type component, string layerName = null)
     {
         var go = CreateBase(name, pixel, color, size, trigger);
         if (component != null)
             go.AddComponent(component);
+        if (!string.IsNullOrEmpty(layerName))
+        {
+            int layer = LayerMask.NameToLayer(layerName);
+            if (layer >= 0)
+                go.layer = layer;
+        }
         Save(go, name);
         return go;
     }

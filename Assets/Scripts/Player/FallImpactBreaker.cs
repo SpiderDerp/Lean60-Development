@@ -31,26 +31,28 @@ public class FallImpactBreaker : MonoBehaviour
         else if (!_wasGrounded)
         {
             if (_peakDownSpeed >= impactVelocityThreshold)
-                OnHeavyLanding();
+                OnHeavyLanding(_peakDownSpeed);
             _peakDownSpeed = 0f;
         }
-
-        if (grounded)
+        else
+        {
             _peakDownSpeed = 0f;
+        }
 
         _wasGrounded = grounded;
     }
 
-    void OnHeavyLanding()
+    void OnHeavyLanding(float impactSpeed)
     {
+        float intensity = Mathf.Clamp01(impactSpeed / (impactVelocityThreshold * 1.6f));
         if (ScreenShake.Instance != null)
-            ScreenShake.Instance.Shake(shakeMagnitude, shakeDuration);
+            ScreenShake.Instance.Shake(shakeMagnitude * (0.7f + intensity), shakeDuration);
 
         Vector2 origin = (Vector2)transform.position + Vector2.down * breakRadius;
         var hits = Physics2D.OverlapBoxAll(origin, breakBoxSize, 0f);
         for (int i = 0; i < hits.Length; i++)
         {
-            var block = hits[i].GetComponent<BreakableBlock>();
+            var block = hits[i].GetComponentInParent<BreakableBlock>();
             if (block != null)
                 block.Break();
         }

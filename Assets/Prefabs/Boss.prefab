@@ -144,6 +144,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fbca4fc3a64fe4c58cae5e8e9cfc6d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHp: 20
+  projectilePrefab: {fileID: 100005, guid: 691c5957543d63ba3134e6a48ea0fb43, type: 3}
+  hpText: {fileID: 0}
+  firePoint: {fileID: 0}
 --- !u!1 &200000
 GameObject:
   m_ObjectHideFlags: 0

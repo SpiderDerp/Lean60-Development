@@ -22,6 +22,6 @@ public class ShipPickup : MonoBehaviour
 
         inventory.EnterShipMode(player.FacingSign);
         if (destroyOnPickup)
-            Destroy(gameObject);
+            gameObject.SetActive(false);
     }
 }

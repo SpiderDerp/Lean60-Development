@@ -200,6 +200,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b034ce495c5c3d3b2740399d4b59450f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxDistance: 14
+  grappleMask:
+    serializedVersion: 2
+    m_Bits: 64
+  lineRenderer: {fileID: 0}
+  ropeWidth: 0.05
 --- !u!114 &100008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +218,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 378c0781f53cb85348825852c32878bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  projectilePrefab: {fileID: 100005, guid: 691c5957543d63ba3134e6a48ea0fb43, type: 3}
+  fireCooldown: 0.25
+  bulletSpeed: 16
+  muzzleOffset: {x: 0.6, y: 0.1}
 --- !u!114 &100009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,3 +246,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cde693c432b2f2ee989a9b64594c6093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveAccel: 35
+  maxSpeed: 6.5
+  jumpForce: 11
+  gravityScale: 3.2
+  mass: 2.5
+  shipSpeed: 7
+  shipFlapForce: 8
+  groundCheck: {fileID: 0}
+  groundCheckRadius: 0.12
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64 

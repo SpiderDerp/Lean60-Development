@@ -43,4 +43,11 @@ public class PlayerPowerupInventory : MonoBehaviour
     {
         InShipMode = false;
     }
+
+    public void ClearAll()
+    {
+        RemoveGrapple();
+        RemoveGun();
+        ExitShipMode();
+    }
 }

@@ -64,7 +64,13 @@ public class Projectile : MonoBehaviour
             {
                 boss.TakeDamage(bossDamage);
                 Destroy(gameObject);
+                return;
             }
         }
+
+        if (other.isTrigger || other.CompareTag("Player"))
+            return;
+
+        Destroy(gameObject);
     }
 }
