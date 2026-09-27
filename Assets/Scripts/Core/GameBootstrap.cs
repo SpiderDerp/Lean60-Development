@@ -16,6 +16,10 @@ public class GameBootstrap : MonoBehaviour
     void Awake()
     {
         EnsureHud();
+        MusicDirector.Ensure();
+        EnsureNowPlaying();
+        MusicVisualizer.Ensure();
+        TouchControls.Ensure();
         EnsureCamera();
         BindGameManager();
         AssignProjectileRefs();
@@ -72,6 +76,8 @@ public class GameBootstrap : MonoBehaviour
         cam.orthographic = true;
         if (cam.orthographicSize < 6f)
             cam.orthographicSize = 6f;
+        cam.clearFlags = CameraClearFlags.SolidColor;
+        cam.backgroundColor = new Color(0f, 0f, 0f, 0f);
 
         if (cam.GetComponent<ScreenShake>() == null)
             cam.gameObject.AddComponent<ScreenShake>();
@@ -83,6 +89,20 @@ public class GameBootstrap : MonoBehaviour
         var player = FindFirstObjectByType<PlayerController>();
         if (player != null)
             follow.SetTarget(player.transform);
+    }
+
+    void EnsureNowPlaying()
+    {
+        if (NowPlayingHud.Instance != null)
+            return;
+
+        var hud = GameObject.Find("HUD");
+        if (hud == null && timerText != null)
+            hud = timerText.canvas != null ? timerText.canvas.gameObject : null;
+        if (hud == null)
+            return;
+
+        NowPlayingHud.Ensure(hud.transform);
     }
 
     void BindGameManager()

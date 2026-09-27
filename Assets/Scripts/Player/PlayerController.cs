@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour
     float _facingSign = 1f;
     bool _jumpBuffered;
     bool _powerupPressed;
+    Vector2 _pendingForce;
     readonly Collider2D[] _groundHits = new Collider2D[8];
 
     public float FacingSign => _facingSign;
@@ -128,8 +129,12 @@ public class PlayerController : MonoBehaviour
     {
         if (_jumpAction != null && _jumpAction.WasPressedThisFrame())
             _jumpBuffered = true;
+        if (TouchControls.Instance != null && TouchControls.Instance.ConsumeJump())
+            _jumpBuffered = true;
 
         if (_powerupAction != null && _powerupAction.WasPressedThisFrame())
+            _powerupPressed = true;
+        if (TouchControls.Instance != null && TouchControls.Instance.ConsumeAction())
             _powerupPressed = true;
 
         SyncModeFromInventory();
@@ -147,6 +152,7 @@ public class PlayerController : MonoBehaviour
         HandlePowerupPress();
         _jumpBuffered = false;
         _powerupPressed = false;
+        _pendingForce = Vector2.zero;
     }
 
     void SyncModeFromInventory()
@@ -160,20 +166,23 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 move = _moveAction != null ? _moveAction.ReadValue<Vector2>() : Vector2.zero;
         float x = move.x;
+        if (TouchControls.Instance != null)
+            x = Mathf.Clamp(x + TouchControls.Instance.MoveX, -1f, 1f);
 
         if (Mathf.Abs(x) > 0.01f)
             _facingSign = Mathf.Sign(x);
 
+        Vector2 wind = WindBoost();
+
         if (_grapple != null && _grapple.IsAttached)
         {
-            // Allow slight air influence while swinging.
-            _rb.AddForce(new Vector2(x * moveAccel * 0.35f, 0f));
+            _rb.AddForce(new Vector2(x * moveAccel * 0.35f, 0f) + _pendingForce);
         }
         else
         {
-            float targetVx = x * maxSpeed;
+            float targetVx = x * maxSpeed + wind.x;
             float newVx = Mathf.MoveTowards(_rb.linearVelocity.x, targetVx, moveAccel * Time.fixedDeltaTime);
-            _rb.linearVelocity = new Vector2(newVx, _rb.linearVelocity.y);
+            _rb.linearVelocity = new Vector2(newVx, _rb.linearVelocity.y + wind.y * Time.fixedDeltaTime);
 
             if (_jumpBuffered && IsGrounded)
             {
@@ -189,8 +198,9 @@ public class PlayerController : MonoBehaviour
     {
         float dir = _inventory.ShipDirection;
         _facingSign = dir;
+        Vector2 wind = WindBoost();
         _rb.gravityScale = gravityScale * 0.85f;
-        _rb.linearVelocity = new Vector2(dir * shipSpeed, _rb.linearVelocity.y);
+        _rb.linearVelocity = new Vector2(dir * shipSpeed + wind.x, _rb.linearVelocity.y + wind.y * Time.fixedDeltaTime);
 
         if (_powerupPressed)
             _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, shipFlapForce);
@@ -291,6 +301,12 @@ public class PlayerController : MonoBehaviour
 
     public void AddExternalForce(Vector2 force)
     {
-        _rb.AddForce(force);
+        _pendingForce += force;
+    }
+
+    Vector2 WindBoost()
+    {
+        float m = _rb != null ? Mathf.Max(0.01f, _rb.mass) : 1f;
+        return _pendingForce / m;
     }
 }

@@ -134,9 +134,30 @@ public class BossController : MonoBehaviour
 
     void SpawnBullet(Vector2 direction, float speed)
     {
-        var proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+        Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.left;
+        var proj = Instantiate(projectilePrefab, SpawnOutsideBody(dir), Quaternion.identity);
         proj.gameObject.SetActive(true);
-        proj.Launch(direction, true, speed);
+        proj.Launch(dir, true, speed);
+    }
+
+    Vector3 SpawnOutsideBody(Vector2 direction)
+    {
+        Vector2 origin = firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
+        var col = GetComponent<Collider2D>();
+        if (col == null)
+            return origin;
+
+        Bounds b = col.bounds;
+        if (!b.Contains(origin))
+            return origin;
+
+        float tx = Mathf.Abs(direction.x) > 0.0001f ? b.extents.x / Mathf.Abs(direction.x) : float.PositiveInfinity;
+        float ty = Mathf.Abs(direction.y) > 0.0001f ? b.extents.y / Mathf.Abs(direction.y) : float.PositiveInfinity;
+        float toSurface = Mathf.Min(tx, ty);
+        if (float.IsInfinity(toSurface))
+            return origin;
+
+        return (Vector2)b.center + direction * (toSurface + 0.25f);
     }
 
     public void TakeDamage(int amount)

@@ -24,12 +24,14 @@ public class Projectile : MonoBehaviour
         col.isTrigger = true;
     }
 
-    public void Launch(Vector2 direction, bool hurtPlayer, float overrideSpeed = -1f)
+    public void Launch(Vector2 direction, bool hurtPlayer, float overrideSpeed = -1f, float overrideLifetime = -1f)
     {
         _direction = direction.normalized;
         damagesPlayer = hurtPlayer;
         if (overrideSpeed > 0f)
             speed = overrideSpeed;
+        if (overrideLifetime > 0f)
+            lifetime = overrideLifetime;
 
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -46,6 +48,9 @@ public class Projectile : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.GetComponent<Projectile>() != null)
+            return;
+
+        if (damagesPlayer && other.GetComponentInParent<BossController>() != null)
             return;
 
         if (damagesPlayer && other.CompareTag("Player"))
