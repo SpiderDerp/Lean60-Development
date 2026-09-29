@@ -61,9 +61,43 @@
 	<div id="gameContainer">
 		<canvas id="viz-canvas"></canvas>
 		<canvas id="unity-canvas" width="{{{ WIDTH }}}" height="{{{ HEIGHT }}}" data-pixel-art="{{{ OPTIMIZE_FOR_PIXEL_ART }}}"></canvas>
-		<script src="butterchurn.min.js"></script>
-		<script src="butterchurnPresets.min.js"></script>
-		<script src="lean60-viz.js"></script>
+		<script>
+			window.Lean60Viz = window.Lean60Viz || {};
+			window.Lean60Viz.load = function (done) {
+				if (window.Lean60Viz._ready) {
+					if (done) done();
+					return;
+				}
+				if (!window.Lean60Viz._waiters)
+					window.Lean60Viz._waiters = [];
+				if (done)
+					window.Lean60Viz._waiters.push(done);
+				if (window.Lean60Viz._loading)
+					return;
+				window.Lean60Viz._loading = true;
+				function inject(src, next) {
+					var s = document.createElement("script");
+					s.src = src;
+					s.onload = next;
+					s.onerror = function () {
+						console.error("Failed to load " + src);
+						next();
+					};
+					document.body.appendChild(s);
+				}
+				inject("butterchurn.min.js", function () {
+					inject("butterchurnPresets.min.js", function () {
+						inject("lean60-viz.js", function () {
+							window.Lean60Viz._ready = !!(window.Lean60Viz && window.Lean60Viz.start);
+							var waiters = window.Lean60Viz._waiters || [];
+							window.Lean60Viz._waiters = [];
+							for (var i = 0; i < waiters.length; i++)
+								waiters[i]();
+						});
+					});
+				});
+			};
+		</script>
 		<script src="Build/{{{ LOADER_FILENAME }}}"></script>
 		<script>
 			var canvas = document.querySelector("#unity-canvas");
@@ -121,6 +155,7 @@
 			createUnityInstance(canvas, config, progressHandler).then(function (instance) {
 				window.unityInstance = instance;
 				canvas = instance.Module.canvas;
+				canvas.style.background = "transparent";
 				onResize();
 			});
 			window.addEventListener('resize', onResize);

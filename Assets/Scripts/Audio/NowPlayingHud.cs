@@ -66,7 +66,7 @@ public class NowPlayingHud : MonoBehaviour
         if (track == null)
             return;
 
-        _title.text = string.IsNullOrEmpty(track.title) ? (track.clip != null ? track.clip.name : "Unknown") : track.title;
+        _title.text = string.IsNullOrEmpty(track.title) ? "Unknown" : track.title;
         _artist.text = string.IsNullOrEmpty(track.artist) ? string.Empty : track.artist;
 
         if (_fade != null)
@@ -102,16 +102,27 @@ public class NowPlayingHud : MonoBehaviour
         rt.anchorMax = new Vector2(0f, 1f);
         rt.pivot = new Vector2(0f, 1f);
         rt.anchoredPosition = new Vector2(24f, -24f);
-        rt.sizeDelta = new Vector2(420f, 92f);
+        rt.sizeDelta = new Vector2(210f, 50f);
 
         _group = gameObject.AddComponent<CanvasGroup>();
         _group.blocksRaycasts = false;
         _group.interactable = false;
 
-        CreateText(out var heading, "Heading", "NOW PLAYING", 16, 0f);
+        var bgGo = new GameObject("Backdrop");
+        bgGo.transform.SetParent(transform, false);
+        var bg = bgGo.AddComponent<Image>();
+        bg.color = new Color(0f, 0f, 0f, 0.45f);
+        bg.raycastTarget = false;
+        var bgRt = bg.rectTransform;
+        bgRt.anchorMin = Vector2.zero;
+        bgRt.anchorMax = Vector2.one;
+        bgRt.offsetMin = new Vector2(-6f, -6f);
+        bgRt.offsetMax = new Vector2(6f, 6f);
+
+        CreateText(out var heading, "Heading", "NOW PLAYING", 8, 0f);
         heading.color = new Color(1f, 1f, 1f, 0.7f);
-        CreateText(out _title, "Title", string.Empty, 22, -22f);
-        CreateText(out _artist, "Artist", string.Empty, 18, -48f);
+        CreateText(out _title, "Title", string.Empty, 11, -12f);
+        CreateText(out _artist, "Artist", string.Empty, 9, -26f);
         _artist.color = new Color(1f, 1f, 1f, 0.8f);
     }
 
@@ -132,7 +143,7 @@ public class NowPlayingHud : MonoBehaviour
         rt.anchorMin = new Vector2(0f, 1f);
         rt.anchorMax = new Vector2(1f, 1f);
         rt.pivot = new Vector2(0f, 1f);
-        rt.anchoredPosition = new Vector2(0f, y);
-        rt.sizeDelta = new Vector2(0f, 30f);
+        rt.anchoredPosition = new Vector2(4f, y - 2f);
+        rt.sizeDelta = new Vector2(-8f, 16f);
     }
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
 using UnityEngine.SceneManagement;
@@ -21,10 +21,10 @@ public class TitleMenu : MonoBehaviour
         canvasGo.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         canvasGo.AddComponent<GraphicRaycaster>();
 
-        CreateLabel(canvasGo.transform, "Title", "LEAN 60", new Vector2(0.5f, 0.72f), 56, TextAnchor.MiddleCenter);
-        CreateLabel(canvasGo.transform, "Subtitle", "Select a difficulty", new Vector2(0.5f, 0.58f), 26, TextAnchor.MiddleCenter);
+        CreateLabel(canvasGo.transform, "Title", "i need to find lean in 60 seconds before i die of cardiac arrest", new Vector2(0.5f, 0.72f), 28, TextAnchor.MiddleCenter);
+        CreateLabel(canvasGo.transform, "Subtitle", "Select a difficulty", new Vector2(0.5f, 0.58f), 13, TextAnchor.MiddleCenter);
 
-        CreateDifficultyButton(canvasGo.transform, "Normal", new Vector2(0.5f, 0.42f), GameSession.Difficulty.Normal);
+        CreateDifficultyButton(canvasGo.transform, "Easy", new Vector2(0.5f, 0.42f), GameSession.Difficulty.Normal);
         CreateDifficultyButton(canvasGo.transform, "Hard", new Vector2(0.5f, 0.28f), GameSession.Difficulty.Hard);
     }
 

@@ -204,7 +204,6 @@ public class DemoLevelBuilder : MonoBehaviour
         hitbox.transform.SetParent(boss.transform, true);
         var bossCtrl = boss.AddComponent<BossController>();
         bossCtrl.SetPrefab(_projectilePrefab);
-        bossCtrl.SetHpText(bossHpText);
         // Move hitbox component... BossController is on parent; GetComponentInParent works from hitbox collisions on child - projectile checks GetComponentInParent. Child needs to be the one entered - projectile hits child trigger, GetComponentInParent finds BossController. Good.
         // But hitbox is separate object with its own sprite - parent also has collider. Make parent collider non-trigger solid for standing? Boss floating - disable parent physics collision for player walk-through? Keep solid so player can bump.
         // Add BossController reference on child via same parent.

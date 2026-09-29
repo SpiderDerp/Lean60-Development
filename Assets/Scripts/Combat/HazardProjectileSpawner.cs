@@ -33,8 +33,9 @@ public class HazardProjectileSpawner : MonoBehaviour
         if (projectilePrefab == null)
             return;
 
-        var proj = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        proj.gameObject.SetActive(true);
+        var proj = Projectile.Spawn(projectilePrefab, transform.position);
+        if (proj == null)
+            return;
         proj.Launch(direction.normalized, true, projectileSpeed);
     }
 }

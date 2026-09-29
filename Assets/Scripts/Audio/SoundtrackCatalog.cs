@@ -7,10 +7,12 @@ public class SoundtrackCatalog : ScriptableObject
     [Serializable]
     public class Track
     {
-        public AudioClip clip;
+        public string path;
         public string title;
         public string artist;
         public Color accent = new Color(0.55f, 0.35f, 0.85f, 1f);
+
+        [NonSerialized] public AudioClip clip;
     }
 
     public Track[] normal = Array.Empty<Track>();

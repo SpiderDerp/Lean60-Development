@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
     bool _powerupPressed;
     Vector2 _pendingForce;
     readonly Collider2D[] _groundHits = new Collider2D[8];
+    ContactFilter2D _groundFilter;
 
     public float FacingSign => _facingSign;
     public bool IsGrounded { get; private set; }
@@ -66,6 +67,10 @@ public class PlayerController : MonoBehaviour
 
         if (groundMask.value == 0)
             groundMask = LayerMask.GetMask("Ground");
+
+        _groundFilter.useTriggers = false;
+        _groundFilter.useLayerMask = true;
+        _groundFilter.SetLayerMask(groundMask);
 
         if (groundCheck == null)
         {
@@ -232,14 +237,7 @@ public class PlayerController : MonoBehaviour
         if (groundCheck == null)
             return false;
 
-        var filter = new ContactFilter2D
-        {
-            useTriggers = false,
-            useLayerMask = true
-        };
-        filter.SetLayerMask(groundMask);
-
-        int count = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, filter, _groundHits);
+        int count = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, _groundFilter, _groundHits);
         for (int i = 0; i < count; i++)
         {
             var hit = _groundHits[i];
@@ -258,15 +256,21 @@ public class PlayerController : MonoBehaviour
         if (_facingSign == 0f)
             _facingSign = 1f;
 
-        // Keep scale positive. Negative X scale makes URP 2D sprites vanish.
-        var scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x);
-        if (scale.x < 0.01f)
-            scale.x = 0.9f;
-        transform.localScale = scale;
+        ApplyFacingScale(_facingSign, _sprite);
+    }
 
-        if (_sprite != null)
-            _sprite.flipX = _facingSign < 0f;
+    public void ApplyFacingScale(float facingSign, SpriteRenderer sprite)
+    {
+        if (facingSign == 0f)
+            facingSign = 1f;
+
+        float mag = Mathf.Abs(transform.localScale.y);
+        if (mag < 0.01f)
+            mag = 0.75f;
+        transform.localScale = new Vector3(mag * (facingSign < 0f ? -1f : 1f), mag, 1f);
+
+        if (sprite != null)
+            sprite.flipX = false;
     }
 
     public void TeleportTo(Vector3 position)

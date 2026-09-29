@@ -25,8 +25,10 @@ public class BossController : MonoBehaviour
 
     [SerializeField] int maxHp = 20;
     [SerializeField] Projectile projectilePrefab;
+    [SerializeField] float projectileRange = 32f;
     [SerializeField] AttackPattern[] patterns;
-    [SerializeField] Text hpText;
+    [SerializeField] Image hpFill;
+    [SerializeField] GameObject hpBarRoot;
     [SerializeField] Transform firePoint;
 
     int _hp;
@@ -36,20 +38,25 @@ public class BossController : MonoBehaviour
     float _shotTimer;
     bool _inPattern;
     Transform _player;
+    Collider2D _body;
+    bool _hpVisible;
 
     public void SetPrefab(Projectile prefab)
     {
         projectilePrefab = prefab;
     }
 
-    public void SetHpText(Text text)
+    public void SetHpBar(Image fill, GameObject root)
     {
-        hpText = text;
+        hpFill = fill;
+        hpBarRoot = root;
+        UpdateHpUi();
     }
 
     void Awake()
     {
         _hp = maxHp;
+        _body = GetComponent<Collider2D>();
         if (firePoint == null)
             firePoint = transform;
         if (patterns == null || patterns.Length == 0)
@@ -108,46 +115,62 @@ public class BossController : MonoBehaviour
 
     void FirePatternShot(AttackPattern pattern)
     {
-        Vector2 dir = pattern.fixedDirection.normalized;
+        Vector2 aim = AimAtPlayer();
         switch (pattern.type)
         {
-            case PatternType.AimedBurst:
-                if (_player != null)
-                    dir = ((Vector2)_player.position - (Vector2)firePoint.position).normalized;
-                SpawnBullet(dir, pattern.projectileSpeed);
-                break;
             case PatternType.FixedFan:
             {
                 float t = pattern.shotCount <= 1 ? 0.5f : _shotsFired / (float)(pattern.shotCount - 1);
                 float angle = Mathf.Lerp(-pattern.fanSpread * 0.5f, pattern.fanSpread * 0.5f, t);
-                Vector2 baseDir = pattern.fixedDirection.normalized;
-                float baseAngle = Mathf.Atan2(baseDir.y, baseDir.x) * Mathf.Rad2Deg;
+                float baseAngle = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg;
                 float rad = (baseAngle + angle) * Mathf.Deg2Rad;
                 SpawnBullet(new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)), pattern.projectileSpeed);
                 break;
             }
             default:
-                SpawnBullet(dir, pattern.projectileSpeed);
+                SpawnBullet(aim, pattern.projectileSpeed);
                 break;
         }
+    }
+
+    void EnsurePlayer()
+    {
+        if (_player != null)
+            return;
+        var player = FindFirstObjectByType<PlayerController>();
+        if (player != null)
+            _player = player.transform;
+    }
+
+    Vector2 AimAtPlayer()
+    {
+        EnsurePlayer();
+        Vector2 from = transform.position;
+        if (_body != null)
+            from = _body.bounds.center;
+        if (_player == null)
+            return Vector2.left;
+        Vector2 dir = (Vector2)_player.position - from;
+        return dir.sqrMagnitude > 0.0001f ? dir.normalized : Vector2.left;
     }
 
     void SpawnBullet(Vector2 direction, float speed)
     {
         Vector2 dir = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector2.left;
-        var proj = Instantiate(projectilePrefab, SpawnOutsideBody(dir), Quaternion.identity);
-        proj.gameObject.SetActive(true);
-        proj.Launch(dir, true, speed);
+        var proj = Projectile.Spawn(projectilePrefab, SpawnOutsideBody(dir));
+        if (proj == null)
+            return;
+        float lifetime = speed > 0.01f ? projectileRange / speed : 0.5f;
+        proj.Launch(dir, true, speed, lifetime);
     }
 
     Vector3 SpawnOutsideBody(Vector2 direction)
     {
         Vector2 origin = firePoint != null ? (Vector2)firePoint.position : (Vector2)transform.position;
-        var col = GetComponent<Collider2D>();
-        if (col == null)
+        if (_body == null)
             return origin;
 
-        Bounds b = col.bounds;
+        Bounds b = _body.bounds;
         if (!b.Contains(origin))
             return origin;
 
@@ -185,13 +208,26 @@ public class BossController : MonoBehaviour
         _shotsFired = 0;
         _shotTimer = 0f;
         _inPattern = false;
+        _hpVisible = false;
         gameObject.SetActive(true);
+        UpdateHpUi();
+    }
+
+    public void RevealHpUi()
+    {
+        _hpVisible = true;
         UpdateHpUi();
     }
 
     void UpdateHpUi()
     {
-        if (hpText != null)
-            hpText.text = $"Boss HP: {Mathf.Max(0, _hp)}";
+        if (hpFill != null)
+        {
+            float max = Mathf.Max(1, maxHp);
+            hpFill.fillAmount = Mathf.Clamp01(_hp / max);
+        }
+
+        if (hpBarRoot != null)
+            hpBarRoot.SetActive(_hpVisible);
     }
 }

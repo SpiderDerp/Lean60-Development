@@ -15,6 +15,7 @@ public class CameraFollow : MonoBehaviour
     Vector3 _velocity;
     Vector3 _smoothedPosition;
     bool _initialized;
+    bool _searchAttempted;
 
     public void SetTarget(Transform followTarget)
     {
@@ -38,9 +39,13 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null)
         {
-            var player = FindFirstObjectByType<PlayerController>();
-            if (player != null)
-                SetTarget(player.transform);
+            if (!_searchAttempted)
+            {
+                _searchAttempted = true;
+                var player = FindFirstObjectByType<PlayerController>();
+                if (player != null)
+                    SetTarget(player.transform);
+            }
             if (target == null)
                 return;
         }

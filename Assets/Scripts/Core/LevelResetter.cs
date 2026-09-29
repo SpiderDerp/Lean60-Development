@@ -20,7 +20,7 @@ public static class LevelResetter
         for (int i = 0; i < projectiles.Length; i++)
         {
             if (projectiles[i] != null && projectiles[i].gameObject.scene.IsValid())
-                Object.Destroy(projectiles[i].gameObject);
+                projectiles[i].Release();
         }
     }
 

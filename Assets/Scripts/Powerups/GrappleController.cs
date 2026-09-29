@@ -41,7 +41,9 @@ public class GrappleController : MonoBehaviour
         lineRenderer.endWidth = ropeWidth;
         lineRenderer.useWorldSpace = true;
         lineRenderer.textureMode = LineTextureMode.Stretch;
-        var shader = Shader.Find("Sprites/Default");
+        var shader = Shader.Find("Lean60/SpriteUnlitDoubleSided");
+        if (shader == null)
+            shader = Shader.Find("Sprites/Default");
         if (shader != null)
             lineRenderer.material = new Material(shader);
         lineRenderer.startColor = Color.white;

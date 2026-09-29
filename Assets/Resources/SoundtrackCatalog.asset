@@ -12,5 +12,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6ea3c40915f6c301e7d8fa02b3c4d5e, type: 3}
   m_Name: SoundtrackCatalog
   m_EditorClassIdentifier: 
-  normal: []
-  hard: []
+  normal:
+  - path: Audio/Easy/Prezzy.mp3
+    title: Prezzy
+    artist: MIKE
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/Back 2 Da Basics.mp3
+    title: Back 2 Da Basics
+    artist: Summrs
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/BOSSUPPPP.mp3
+    title: BOSSUPPPP
+    artist: Che
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/COINCIDENCE.mp3
+    title: COINCIDENCE
+    artist: LUCKI
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/Free Mr. Banks (Bonus).mp3
+    title: Free Mr. Banks
+    artist: LUCKI
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/Da MVP.mp3
+    title: Da MVP
+    artist: Summrs
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/More Than Ever.mp3
+    title: More Than Ever
+    artist: LUCKI
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/Komfortable.mp3
+    title: Komfortable
+    artist: LUCKI
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/New Drank.mp3
+    title: New Drank
+    artist: LUCKI
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Easy/Peach Dream.mp3
+    title: Peach Dream
+    artist: 
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  hard:
+  - path: Audio/Hard/Bowling.mp3
+    title: Bowling
+    artist: rexv2
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/Freestyle.mp3
+    title: Freestyle
+    artist: Osamason
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/HOOD FAMOUS.mp3
+    title: HOOD FAMOUS
+    artist: Che
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/Maag Dump.mp3
+    title: Maag Dump
+    artist: Osamason
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/OTHERSIDE.mp3
+    title: OTHERSIDE
+    artist: bladee
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/Roc.mp3
+    title: Roc
+    artist: 2Slimey
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/Vet.mp3
+    title: Vet
+    artist: 
+    accent: {r: 0, g: 0, b: 0, a: 0}
+  - path: Audio/Hard/Wipe Yo Nose.mp3
+    title: Wipe Yo Nose
+    artist: Slayr
+    accent: {r: 0, g: 0, b: 0, a: 0}

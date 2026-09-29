@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -9,9 +10,47 @@ public class Projectile : MonoBehaviour
     [SerializeField] bool damagesPlayer = true;
     [SerializeField] int bossDamage = 1;
 
+    static readonly List<Projectile> _inactive = new List<Projectile>(32);
+
     Vector2 _direction = Vector2.right;
     float _age;
+    float _defaultSpeed;
+    float _defaultLifetime;
     Rigidbody2D _rb;
+
+    public static Projectile Spawn(Projectile prefab, Vector3 position)
+    {
+        if (prefab == null)
+            return null;
+
+        Projectile p = null;
+        for (int i = _inactive.Count - 1; i >= 0; i--)
+        {
+            p = _inactive[i];
+            _inactive.RemoveAt(i);
+            if (p != null)
+                break;
+            p = null;
+        }
+
+        if (p == null)
+            p = Instantiate(prefab, position, Quaternion.identity);
+        else
+            p.transform.SetPositionAndRotation(position, Quaternion.identity);
+
+        p.gameObject.SetActive(true);
+        return p;
+    }
+
+    public void Release()
+    {
+        if (!gameObject.activeSelf)
+            return;
+
+        _age = 0f;
+        gameObject.SetActive(false);
+        _inactive.Add(this);
+    }
 
     void Awake()
     {
@@ -22,16 +61,18 @@ public class Projectile : MonoBehaviour
 
         var col = GetComponent<Collider2D>();
         col.isTrigger = true;
+
+        _defaultSpeed = speed;
+        _defaultLifetime = lifetime;
     }
 
     public void Launch(Vector2 direction, bool hurtPlayer, float overrideSpeed = -1f, float overrideLifetime = -1f)
     {
+        _age = 0f;
         _direction = direction.normalized;
         damagesPlayer = hurtPlayer;
-        if (overrideSpeed > 0f)
-            speed = overrideSpeed;
-        if (overrideLifetime > 0f)
-            lifetime = overrideLifetime;
+        speed = overrideSpeed > 0f ? overrideSpeed : _defaultSpeed;
+        lifetime = overrideLifetime > 0f ? overrideLifetime : _defaultLifetime;
 
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
@@ -42,7 +83,7 @@ public class Projectile : MonoBehaviour
         transform.position += (Vector3)(_direction * speed * Time.deltaTime);
         _age += Time.deltaTime;
         if (_age >= lifetime)
-            Destroy(gameObject);
+            Release();
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -58,7 +99,7 @@ public class Projectile : MonoBehaviour
             var health = other.GetComponent<PlayerHealth>();
             if (health != null)
                 health.Die();
-            Destroy(gameObject);
+            Release();
             return;
         }
 
@@ -68,7 +109,7 @@ public class Projectile : MonoBehaviour
             if (boss != null)
             {
                 boss.TakeDamage(bossDamage);
-                Destroy(gameObject);
+                Release();
                 return;
             }
         }
@@ -76,6 +117,6 @@ public class Projectile : MonoBehaviour
         if (other.isTrigger || other.CompareTag("Player"))
             return;
 
-        Destroy(gameObject);
+        Release();
     }
 }

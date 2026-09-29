@@ -13,10 +13,16 @@ public class GameManager : MonoBehaviour
     }
 
     [SerializeField] float roundSeconds = 60f;
+    [SerializeField] float countdownSlowdown = 1.5f;
     [SerializeField] SpawnPoint spawnPoint;
     [SerializeField] PlayerController player;
     [SerializeField] Text timerText;
+    [SerializeField] Image timerRing;
     [SerializeField] Text statusText;
+
+    int _deaths;
+    int _shownSeconds = int.MinValue;
+    RunState _shownState = (RunState)(-1);
 
     public RunState State { get; private set; } = RunState.Playing;
     public float TimeRemaining { get; private set; }
@@ -51,7 +57,8 @@ public class GameManager : MonoBehaviour
         if (State != RunState.Playing)
             return;
 
-        TimeRemaining -= Time.deltaTime;
+        float slowdown = countdownSlowdown > 0f ? countdownSlowdown : 1f;
+        TimeRemaining -= Time.deltaTime / slowdown;
         if (TimeRemaining <= 0f)
         {
             TimeRemaining = 0f;
@@ -65,6 +72,10 @@ public class GameManager : MonoBehaviour
     {
         if (State != RunState.Playing)
             return;
+
+        _deaths++;
+        if (_deaths % 5 == 0)
+            MusicVisualizer.RandomizePreset();
 
         RespawnPlayer();
     }
@@ -103,12 +114,20 @@ public class GameManager : MonoBehaviour
 
     void UpdateUi()
     {
-        if (timerText != null)
-            timerText.text = $"Time: {Mathf.CeilToInt(TimeRemaining)}";
+        int seconds = Mathf.CeilToInt(TimeRemaining);
+        if (timerText != null && seconds != _shownSeconds)
+        {
+            _shownSeconds = seconds;
+            timerText.text = seconds.ToString();
+        }
 
-        if (statusText == null)
+        if (timerRing != null && roundSeconds > 0.01f)
+            timerRing.fillAmount = Mathf.Clamp01(TimeRemaining / roundSeconds);
+
+        if (statusText == null || State == _shownState)
             return;
 
+        _shownState = State;
         switch (State)
         {
             case RunState.Won:
@@ -123,11 +142,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void BindReferences(PlayerController playerController, SpawnPoint spawn, Text timer, Text status)
+    public void BindReferences(PlayerController playerController, SpawnPoint spawn, Text timer, Text status, Image ring = null)
     {
         player = playerController;
         spawnPoint = spawn;
         timerText = timer;
         statusText = status;
+        if (ring != null)
+            timerRing = ring;
+    }
+
+    public void SetTimerRing(Image ring)
+    {
+        timerRing = ring;
     }
 }

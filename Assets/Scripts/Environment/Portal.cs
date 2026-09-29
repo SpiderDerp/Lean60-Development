@@ -42,7 +42,19 @@ public class Portal : MonoBehaviour
             return;
 
         player.TeleportTo(destination.transform.position + (Vector3)destination.exitOffset);
+        if (string.Equals(linkId.Trim(), "C", System.StringComparison.OrdinalIgnoreCase))
+            RevealBossHp();
         StartCoroutine(CooldownGroup());
+    }
+
+    static void RevealBossHp()
+    {
+        var bosses = FindObjectsByType<BossController>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        for (int i = 0; i < bosses.Length; i++)
+        {
+            if (bosses[i] != null)
+                bosses[i].RevealHpUi();
+        }
     }
 
     Portal FindLinkedPortal()
