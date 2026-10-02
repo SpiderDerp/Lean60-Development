@@ -90,7 +90,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 8746252102470264152, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
+  m_Sprite: {fileID: 167742313776601933, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -286,19 +286,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   idle:
-  - {fileID: 8746252102470264152, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
+  - {fileID: 167742313776601933, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
   run:
-  - {fileID: 7289337608367328321, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
-  - {fileID: -1513761697215121488, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
-  - {fileID: -5161532064642372821, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
-  - {fileID: -4978963491277530266, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
+  - {fileID: 1948467465, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: 18248921, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -1332236869, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -144631882, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: 270293371, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -1705616705, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
   jump:
-  - {fileID: -3032370236935658492, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
-  - {fileID: 2891840232578008909, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
+  - {fileID: 1409538598, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -373186312, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -371688323, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
   fall:
-  - {fileID: -5860299591524971319, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
-  land:
-  - {fileID: -3859592532329618858, guid: de4e7b7ab0bff403280c51d60c6b09c8, type: 3}
+  - {fileID: -416488500, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  - {fileID: -1711281987, guid: f71298089777e48cba583e2ed93e0a6a, type: 3}
+  land: []
   idleFps: 6
   runFps: 10
   jumpFps: 12
@@ -306,3 +309,4 @@ MonoBehaviour:
   landFps: 8
   runSpeedThreshold: 0.2
   jumpVelocityThreshold: 0.2
+  stillSpeed: 0.35

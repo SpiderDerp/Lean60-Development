@@ -982,6 +982,14 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 100001, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 100001, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3
       objectReference: {fileID: 0}
@@ -1022,12 +1030,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 100003, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
+      propertyPath: m_Size.x
+      value: 0.52596474
+      objectReference: {fileID: 0}
+    - target: {fileID: 100003, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
       propertyPath: m_Size.y
-      value: 1.4719241
+      value: 0.8634366
+      objectReference: {fileID: 0}
+    - target: {fileID: 100003, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.008778408
       objectReference: {fileID: 0}
     - target: {fileID: 100003, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
       propertyPath: m_Offset.y
-      value: 0.23596218
+      value: -0.06828171
       objectReference: {fileID: 0}
     - target: {fileID: 100010, guid: 8e34549fa5855ad0a9dc09bd62e9eb5e, type: 3}
       propertyPath: jumpForce

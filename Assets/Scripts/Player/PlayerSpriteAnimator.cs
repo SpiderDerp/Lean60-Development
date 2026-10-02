@@ -25,6 +25,7 @@ public class PlayerSpriteAnimator : MonoBehaviour
     [SerializeField] float landFps = 8f;
     [SerializeField] float runSpeedThreshold = 0.2f;
     [SerializeField] float jumpVelocityThreshold = 0.2f;
+    [SerializeField] float stillSpeed = 0.35f;
 
     SpriteRenderer _sprite;
     PlayerController _player;
@@ -32,9 +33,8 @@ public class PlayerSpriteAnimator : MonoBehaviour
     AnimState _state;
     int _frame;
     float _elapsed;
-    bool _wasGrounded = true;
-    bool _landDone;
     bool _fromJump;
+    bool _landDone;
 
     void Awake()
     {
@@ -62,12 +62,19 @@ public class PlayerSpriteAnimator : MonoBehaviour
             if (_state == AnimState.Jump)
             {
                 float vy = _body != null ? _body.linearVelocity.y : 0f;
-                _frame = vy > jumpVelocityThreshold ? 0 : Mathf.Min(1, frames.Length - 1);
+                if (vy > jumpVelocityThreshold)
+                    _frame = Mathf.Min((int)_elapsed, Mathf.Max(0, frames.Length - 2));
+                else
+                    _frame = frames.Length - 1;
+            }
+            else if (_state == AnimState.Fall)
+            {
+                _frame = 0;
             }
             else if (_state == AnimState.Land)
             {
-                _frame = Mathf.Min((int)_elapsed, frames.Length - 1);
-                if (_elapsed >= frames.Length)
+                _frame = frames.Length > 1 ? 1 : 0;
+                if (_elapsed >= 1f)
                     _landDone = true;
             }
             else
@@ -91,8 +98,13 @@ public class PlayerSpriteAnimator : MonoBehaviour
 
         if (!grounded)
         {
-            _wasGrounded = false;
             _landDone = false;
+            if (Mathf.Abs(vx) < stillSpeed && Mathf.Abs(vy) < stillSpeed)
+            {
+                _fromJump = false;
+                return AnimState.Idle;
+            }
+
             if (vy > jumpVelocityThreshold)
             {
                 _fromJump = true;
@@ -102,14 +114,18 @@ public class PlayerSpriteAnimator : MonoBehaviour
             return _fromJump ? AnimState.Jump : AnimState.Fall;
         }
 
-        _fromJump = false;
-        bool justLanded = !_wasGrounded;
-        _wasGrounded = true;
-
-        if (justLanded || (_state == AnimState.Land && !_landDone))
+        if (_state == AnimState.Fall || (_state == AnimState.Land && !_landDone))
             return AnimState.Land;
 
-        return Mathf.Abs(vx) > runSpeedThreshold ? AnimState.Run : AnimState.Idle;
+        _fromJump = false;
+
+        if (Mathf.Abs(vx) < stillSpeed && Mathf.Abs(vy) < stillSpeed)
+            return AnimState.Idle;
+
+        if (Mathf.Abs(vx) <= runSpeedThreshold)
+            return AnimState.Idle;
+
+        return AnimState.Run;
     }
 
     Sprite[] FramesFor(AnimState state)
@@ -119,7 +135,7 @@ public class PlayerSpriteAnimator : MonoBehaviour
             case AnimState.Run: return run;
             case AnimState.Jump: return jump;
             case AnimState.Fall: return fall;
-            case AnimState.Land: return land;
+            case AnimState.Land: return fall;
             default: return idle;
         }
     }

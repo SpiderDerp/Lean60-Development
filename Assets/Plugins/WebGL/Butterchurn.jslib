@@ -38,15 +38,19 @@ mergeInto(LibraryManager.library, {
   },
 
   Butterchurn_SetAudio: function (timePtr, timeLength, specPtr, specLength) {
-    if (!window.Lean60Viz || !window.Lean60Viz.setAudio) {
+    var viz = window.Lean60Viz;
+    if (!viz || !viz.setAudio) {
       return;
     }
-    var timeOff = timePtr >> 2;
-    var specOff = specPtr >> 2;
-    window.Lean60Viz.setAudio(
-      HEAPF32.slice(timeOff, timeOff + timeLength),
-      HEAPF32.slice(specOff, specOff + specLength)
-    );
+    if (!viz._timeIn || viz._timeIn.length !== timeLength) {
+      viz._timeIn = new Float32Array(timeLength);
+    }
+    if (!viz._specIn || viz._specIn.length !== specLength) {
+      viz._specIn = new Float32Array(specLength);
+    }
+    viz._timeIn.set(HEAPF32.subarray(timePtr >> 2, (timePtr >> 2) + timeLength));
+    viz._specIn.set(HEAPF32.subarray(specPtr >> 2, (specPtr >> 2) + specLength));
+    viz.setAudio(viz._timeIn, viz._specIn);
   },
 
   Butterchurn_SetQuality: function (width, height, frameMs) {

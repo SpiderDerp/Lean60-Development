@@ -127,6 +127,8 @@
 				canvas.style.background = 'linear-gradient(to right, white, white ' + percent + ', transparent ' + percent + ', transparent) no-repeat center';
 				canvas.style.backgroundSize = '100% 1rem';
 			}
+			var appliedW = 0;
+			var appliedH = 0;
 			function onResize() {
 				var container = canvas.parentElement;
 				var w;
@@ -147,6 +149,12 @@
 					h = {{{ HEIGHT }}};
 				}
 
+				if (appliedW > 0 && w === appliedW && Math.abs(h - appliedH) < 150) {
+					return;
+				}
+				appliedW = w;
+				appliedH = h;
+
 				container.style.width = canvas.style.width = w + "px";
 				container.style.height = canvas.style.height = h + "px";
 				container.style.top = Math.floor((window.innerHeight - h) / 2) + "px";
@@ -165,7 +173,7 @@
 				// Mobile device style: fill the whole browser client area with the game canvas:
 				const meta = document.createElement('meta');
 				meta.name = 'viewport';
-				meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+				meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes, interactive-widget=overlays-content';
 				document.getElementsByTagName('head')[0].appendChild(meta);
 			}
 		</script>

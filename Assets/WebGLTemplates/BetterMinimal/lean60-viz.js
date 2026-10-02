@@ -175,7 +175,7 @@
     return next;
   }
 
-  function sizeCanvas() {
+  function sizeCanvas(force) {
     var cssW = (canvas && canvas.clientWidth) || window.innerWidth;
     var cssH = (canvas && canvas.clientHeight) || window.innerHeight;
     if (cssW < 2) cssW = window.innerWidth;
@@ -183,6 +183,9 @@
     var scale = Math.min(1, MAX_W / cssW, MAX_H / cssH);
     var w = Math.max(2, Math.round(cssW * scale));
     var h = Math.max(2, Math.round(cssH * scale));
+    if (!force && canvas && canvas.width >= 2 && Math.abs(canvas.width - w) <= 8 && Math.abs(canvas.height - h) < 150) {
+      return { w: canvas.width, h: canvas.height };
+    }
     if (canvas) {
       canvas.width = w;
       canvas.height = h;
@@ -190,8 +193,8 @@
     return { w: w, h: h };
   }
 
-  function resize() {
-    var size = sizeCanvas();
+  function resize(force) {
+    var size = sizeCanvas(!!force);
     if (visualizer && visualizer.setRendererSize) {
       visualizer.setRendererSize(size.w, size.h);
     }
@@ -288,7 +291,7 @@
           });
           hookAudio();
           loadCurrent(0);
-          window.addEventListener("resize", resize);
+          window.addEventListener("resize", function () { resize(false); });
         } catch (err) {
           console.error("Butterchurn createVisualizer failed", err);
           visualizer = null;
@@ -372,7 +375,7 @@
       MAX_H = h;
       FRAME_MS = frameMs > 0 ? frameMs : 0;
       lastRender = 0;
-      resize();
+      resize(true);
     },
 
     getCanvasWidth: function () {
